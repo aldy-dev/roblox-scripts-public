@@ -1,4 +1,3 @@
--- Script that shows a welcome message to a player when they join
 game.Players.PlayerAdded:Connect(function(player)
     player:LoadCharacter()
     local welcomeMessage = Instance.new("Message")
