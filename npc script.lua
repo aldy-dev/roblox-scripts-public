@@ -1,24 +1,33 @@
--- This script make the npc follow the nearest player
-local npc = script.Parent
-local runService = game:GetService("RunService")
+local function attackPlayer(player)
+    if debounce then return end
+    debounce = true
 
-runService.Heartbeat:Connect(function()
-    local closestPlayer = nil
-    local shortestDistance = math.huge
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        humanoid:MoveTo(character.HumanoidRootPart.Position)
+        
+        humanoid.MoveToFinished:Wait()
 
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local distance = (npc.Position - player.Character.HumanoidRootPart.Position).magnitude
-            if distance < shortestDistance then
-                closestPlayer = player
-                shortestDistance = distance
-            end
+        if (character.HumanoidRootPart.Position - rootPart.Position).magnitude <= 5 then -- Adjust range for attack
+            character.Humanoid:TakeDamage(10)
         end
+
     end
+
+    wait(attackCooldown)
+    debounce = false
+end
+
+local function onHeartbeat()
+    local closestPlayer = getClosestPlayer()
 
     if closestPlayer then
-        local targetPosition = closestPlayer.Character.HumanoidRootPart.Position
-        npc.CFrame = CFrame.new(npc.Position, targetPosition)
-        npc.Position = npc.Position:Lerp(targetPosition, 0.05)
+        local playerCharacter = closestPlayer.Character
+        local distance = (playerCharacter.HumanoidRootPart.Position - rootPart.Position).magnitude
+
+        if distance <= attackRange then
+            attackPlayer(closestPlayer)
+        else
+        end
     end
-end)
+end
